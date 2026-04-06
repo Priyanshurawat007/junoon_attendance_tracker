@@ -7,7 +7,7 @@ export default function Home() {
   const { token, user, logout } = useContext(AuthContext);
 
   // Navigation & Data States
-  const [screen, setScreen] = useState("home"); // "home", "calendar", "changePassword"
+  const [screen, setScreen] = useState("home"); 
   const [msg, setMsg] = useState("");
   const [stats, setStats] = useState(null);
   const [todayRecord, setTodayRecord] = useState(null);
@@ -27,10 +27,13 @@ export default function Home() {
       const statsRes = await axios.get(`/attendance/percentage?studentId=${user.id}`);
       setStats(statsRes.data);
 
-      // Get current date info
-      const today = new Date().toISOString().split('T')[0];
-      const month = String(new Date().getMonth() + 1).padStart(2, '0');
-      const year = new Date().getFullYear();
+      // --- TIMEZONE FIX START ---
+      // We use 'en-CA' because it returns YYYY-MM-DD, matching your DB format
+      const today = new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' });
+      const now = new Date();
+      const month = String(new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' })).getMonth() + 1).padStart(2, '0');
+      const year = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' })).getFullYear();
+      // --- TIMEZONE FIX END ---
 
       const res = await axios.get(
         `/attendance/calendar?studentId=${user.id}&month=${month}&year=${year}`
@@ -63,7 +66,7 @@ export default function Home() {
         headers: { Authorization: `Bearer ${token}` } 
       });
       setMsg("✅ Checked In Successfully");
-      await fetchTodayData(); // Refresh UI
+      await fetchTodayData(); 
     } catch (err) {
       setMsg(err.response?.data?.message || "Check-in failed");
     }
@@ -75,7 +78,7 @@ export default function Home() {
         headers: { Authorization: `Bearer ${token}` } 
       });
       setMsg("👋 Checked Out Successfully");
-      await fetchTodayData(); // Refresh UI
+      await fetchTodayData(); 
     } catch (err) {
       setMsg(err.response?.data?.message || "Check-out failed");
     }
@@ -251,7 +254,6 @@ const Legend = ({ color, label }) => (
   </div>
 );
 
-// STYLES OBJECT
 const styles = {
   page: { minHeight: "100vh", backgroundImage: `url(${bg})`, backgroundSize: "cover", backgroundPosition: "center", display: "flex", justifyContent: "center", alignItems: "center", position: "relative", fontFamily: "'Segoe UI', Tahoma, sans-serif" },
   overlay: { position: "absolute", width: "100%", height: "100%", background: "rgba(0,0,0,0.7)" },

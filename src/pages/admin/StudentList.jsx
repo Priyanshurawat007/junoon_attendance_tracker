@@ -29,7 +29,7 @@ export default function StudentList({ goBack }) {
     if (!window.confirm(`Are you sure you want to delete student: ${name}?`)) return;
 
     try {
-      await axios.delete(`/admin/delete-student/${id}`, {
+      await axios.delete(`/auth/delete-student/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       alert("Student deleted successfully");
